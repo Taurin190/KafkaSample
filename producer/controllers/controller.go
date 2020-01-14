@@ -3,6 +3,8 @@ package controller
 import (
 	"fmt"
 
+	senders "../../producer/senders"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,7 +29,9 @@ func (controller *KafkaController) Post(c *gin.Context) {
 		return
 	}
 	text := fmt.Sprintf("Success: %s was posted\n", id)
-	c.JSON(200, gin.H{
+	s := senders.GetKafkaSender()
+	s.Send(text)
+	c.JSON(202, gin.H{
 		"message": text,
 	})
 }
