@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/signal"
 	"strconv"
 	"strings"
 	"time"
@@ -34,9 +33,6 @@ func (sender *KafkaSender) Send(text string) {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
-
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
 
 	brokers := strings.Split(*kafkaServers, ",")
 	config := sarama.NewConfig()
