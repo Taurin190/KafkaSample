@@ -1,10 +1,8 @@
 package sender
 
 import (
-	"context"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"os"
 	"os/signal"
 	"strconv"
@@ -37,9 +35,6 @@ func (sender *KafkaSender) Send(text string) {
 		os.Exit(1)
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
 
@@ -49,8 +44,9 @@ func (sender *KafkaSender) Send(text string) {
 	config.Producer.Return.Errors = true
 	config.Producer.Return.Successes = true
 	config.Producer.Retry.Max = 3
+	config.Producer.RequiredAcks = sarama.WaitForAll
 
-	producer, err := sarama.NewAsyncProducer(brokers, config)
+	producer, err := sarama.NewSyncProducer(brokers, config)
 	if err != nil {
 		panic(err)
 	}
@@ -72,14 +68,6 @@ func (sender *KafkaSender) Send(text string) {
 		Value: sarama.StringEncoder(string(jsBytes)),
 	}
 
-	producer.Input() <- msg
-
-	select {
-	case <-producer.Successes():
-		fmt.Println(fmt.Sprintf("success send. message: %s, timestamp: %d", send.Message, send.Timestamp))
-	case err := <-producer.Errors():
-		fmt.Println(fmt.Sprintf("fail send. reason: %v", err.Msg))
-	case <-ctx.Done():
-		return
-	}
+	producer.SendMessage(msg)
+	producer.Close()
 }
