@@ -27,11 +27,15 @@ func GetKafkaSender() *KafkaSender {
 	return &KafkaSender{}
 }
 
-func (sender *KafkaSender) Send(text string) {
+func (sender *KafkaSender) Send(text, topic string) {
 	flag.Parse()
 	if *kafkaServers == "" {
 		flag.PrintDefaults()
 		os.Exit(1)
+	}
+
+	if topic == "" {
+		topic = "topic.A"
 	}
 
 	brokers := strings.Split(*kafkaServers, ",")
@@ -59,7 +63,7 @@ func (sender *KafkaSender) Send(text string) {
 	}
 
 	msg := &sarama.ProducerMessage{
-		Topic: "test.A",
+		Topic: topic,
 		Key:   sarama.StringEncoder(strconv.FormatInt(timestamp, 10)),
 		Value: sarama.StringEncoder(string(jsBytes)),
 	}
