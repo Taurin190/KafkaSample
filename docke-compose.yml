@@ -1,0 +1,14 @@
+version: '3'
+services:
+  db:
+    image: mongo
+    restart: always
+    privileged: true
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "root"
+      MONGO_INITDB_DATABASE: "kafka"
+    ports:
+      - 27017:27017
+    volumes:
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
