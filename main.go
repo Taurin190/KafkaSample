@@ -1,9 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
-	"os/signal"
+
+	"./producer/infrastructure"
 )
 
 func usage() {
@@ -17,14 +19,16 @@ func usage() {
 
 func main() {
 
-	usage()
-
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
-
-	fmt.Println("go-kafka-example start.")
-
-	<-signals
-
-	fmt.Println("go-kafka-example stop.")
+	flag.Parse()
+	args := flag.Args()
+	if len(args) == 0 {
+		usage()
+	}
+	fmt.Printf("args : %s\n", args[0])
+	if args[0] == "pserver" {
+		infrastructure.Router.Run()
+	} else if args[0] == "cprinter" {
+	} else {
+		usage()
+	}
 }
