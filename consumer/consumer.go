@@ -3,20 +3,17 @@ package consumer
 import (
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"os"
 	"os/signal"
-	"strings"
 
 	"github.com/Shopify/sarama"
 )
 
-func main() {
-	flag.Parse()
+func ConsumerPrint(kafkaServers []string) {
+	// flag.Parse()
 
-	if *kafkaServers == "" {
-		flag.PrintDefaults()
+	if kafkaServers[0] == "" {
 		os.Exit(1)
 	}
 
@@ -26,7 +23,7 @@ func main() {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
 
-	brokers := strings.Split(*kafkaServers, ",")
+	brokers := kafkaServers
 	config := sarama.NewConfig()
 
 	config.Consumer.Return.Errors = true

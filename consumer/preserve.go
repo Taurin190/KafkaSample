@@ -16,8 +16,8 @@ var (
 	mongoServers = flag.String("mongoServers", "localhost:27017", "kafka")
 )
 
-func preserve() {
-	flag.Parse()
+func preserve(kafkaServers *string) {
+	// flag.Parse()
 
 	if *kafkaServers == "" {
 		flag.PrintDefaults()

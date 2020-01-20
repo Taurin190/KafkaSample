@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"./consumer"
 	"./producer/infrastructure"
 )
 
@@ -18,8 +19,8 @@ func usage() {
 }
 
 func main() {
-
 	flag.Parse()
+	kafkaServers := []string{"kafkaServers", "localhost:32770", "kafka address"}
 	args := flag.Args()
 	if len(args) == 0 {
 		usage()
@@ -28,6 +29,7 @@ func main() {
 	if args[0] == "pserver" {
 		infrastructure.Router.Run()
 	} else if args[0] == "cprinter" {
+		consumer.ConsumerPrint(kafkaServers)
 	} else {
 		usage()
 	}
