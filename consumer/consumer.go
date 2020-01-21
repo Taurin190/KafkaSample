@@ -10,7 +10,28 @@ import (
 	"github.com/Shopify/sarama"
 )
 
-func ConsumerPrint(kafkaServers []string) {
+/*
+Consumer interface: Consumerで受け取ったメッセージを処理する部分のみ異なるのでExec()内で処理する
+*/
+type Consumer interface {
+	exec(consumedMessage ConsumedMessage)
+	Run(kafkaServers []string)
+}
+
+type consumer struct {
+}
+
+func GetConsumer() Consumer {
+	return &consumer{}
+}
+
+// ConsumedMessage 受信メッセージ
+type ConsumedMessage struct {
+	Message   string `json:"message"`
+	Timestamp int64  `json:"timestamp"`
+}
+
+func (c *consumer) Run(kafkaServers []string) {
 	if kafkaServers[0] == "" {
 		os.Exit(1)
 	}
@@ -52,7 +73,7 @@ func ConsumerPrint(kafkaServers []string) {
 				if err := json.Unmarshal(msg.Value, &consumed); err != nil {
 					fmt.Println(err)
 				}
-				fmt.Println(fmt.Sprintf("consumed message. message: %s, timestamp: %d", consumed.Message, consumed.Timestamp))
+				c.exec(consumed)
 			case <-ctx.Done():
 				break CONSUMER_FOR
 			}
@@ -64,4 +85,8 @@ func ConsumerPrint(kafkaServers []string) {
 	<-signals
 
 	fmt.Println("go-kafka-example stop.")
+}
+
+func (c *consumer) exec(consumedMessage ConsumedMessage) {
+	fmt.Println(fmt.Sprintf("consumed message. message: %s, timestamp: %d", consumedMessage.Message, consumedMessage.Timestamp))
 }

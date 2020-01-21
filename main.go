@@ -20,7 +20,7 @@ func usage() {
 
 func main() {
 	flag.Parse()
-	kafkaServers := []string{"kafkaServers", "localhost:32770", "kafka address"}
+	kafkaServers := []string{"kafkaServers", "localhost:32774", "kafka address"}
 	args := flag.Args()
 	if len(args) == 0 {
 		usage()
@@ -29,7 +29,8 @@ func main() {
 	if args[0] == "pserver" {
 		infrastructure.Router.Run()
 	} else if args[0] == "cprinter" {
-		consumer.ConsumerPrint(kafkaServers)
+		c := consumer.GetConsumer()
+		c.Run(kafkaServers)
 	} else {
 		usage()
 	}
