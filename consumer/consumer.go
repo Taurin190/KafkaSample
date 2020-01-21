@@ -11,8 +11,6 @@ import (
 )
 
 func ConsumerPrint(kafkaServers []string) {
-	// flag.Parse()
-
 	if kafkaServers[0] == "" {
 		os.Exit(1)
 	}

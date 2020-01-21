@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"strings"
 
 	"github.com/Shopify/sarama"
 )
@@ -16,11 +15,8 @@ var (
 	mongoServers = flag.String("mongoServers", "localhost:27017", "kafka")
 )
 
-func preserve(kafkaServers *string) {
-	// flag.Parse()
-
-	if *kafkaServers == "" {
-		flag.PrintDefaults()
+func preserve(kafkaServers []string) {
+	if kafkaServers[0] == "" {
 		os.Exit(1)
 	}
 
@@ -30,7 +26,7 @@ func preserve(kafkaServers *string) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
 
-	brokers := strings.Split(*kafkaServers, ",")
+	brokers := kafkaServers
 	config := sarama.NewConfig()
 
 	config.Consumer.Return.Errors = true
