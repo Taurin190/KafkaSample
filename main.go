@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"./config"
 	"./consumer"
 	"./producer/infrastructure"
 )
@@ -19,8 +20,9 @@ func usage() {
 }
 
 func main() {
+	conf := config.GetConfig()
 	flag.Parse()
-	kafkaServers := []string{"kafkaServers", "localhost:32774", "kafka address"}
+	kafkaServers := conf.KafkaServers
 	args := flag.Args()
 	if len(args) == 0 {
 		usage()

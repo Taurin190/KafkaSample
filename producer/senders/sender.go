@@ -5,16 +5,19 @@ import (
 	"flag"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
+	"../../config"
 	"github.com/Shopify/sarama"
 )
 
-type KafkaSender struct{}
+type KafkaSender struct {
+	kafkaServers []string
+	Config       config.Config
+}
 
 var (
-	kafkaServers = flag.String("kafkaServers", "localhost:32770", "kafka address")
+	kafkaServers = flag.String("kafkaServers", "localhost:32776", "kafka address")
 )
 
 // SendMessage 送信メッセージ
@@ -23,14 +26,14 @@ type SendMessage struct {
 	Timestamp int64  `json:"timestamp"`
 }
 
-func GetKafkaSender() *KafkaSender {
-	return &KafkaSender{}
+func GetKafkaSender(c config.Config) *KafkaSender {
+	return &KafkaSender{
+		Config: c,
+	}
 }
 
 func (sender *KafkaSender) Send(text, topic string) {
-	flag.Parse()
-	if *kafkaServers == "" {
-		flag.PrintDefaults()
+	if sender.Config.KafkaServers[0] == "" {
 		os.Exit(1)
 	}
 
@@ -38,7 +41,7 @@ func (sender *KafkaSender) Send(text, topic string) {
 		topic = "topic.A"
 	}
 
-	brokers := strings.Split(*kafkaServers, ",")
+	brokers := sender.Config.KafkaServers
 	config := sarama.NewConfig()
 
 	config.Producer.Return.Errors = true

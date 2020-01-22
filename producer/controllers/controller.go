@@ -1,15 +1,19 @@
 package controller
 
 import (
+	"../../config"
 	senders "../../producer/senders"
-
 	"github.com/gin-gonic/gin"
 )
 
-type KafkaController struct{}
+type KafkaController struct {
+	Config config.Config
+}
 
-func GetKafkaController() *KafkaController {
-	return &KafkaController{}
+func GetKafkaController(c config.Config) *KafkaController {
+	return &KafkaController{
+		Config: c,
+	}
 }
 
 func (controller *KafkaController) Index(c *gin.Context) {
@@ -27,7 +31,7 @@ func (controller *KafkaController) Post(c *gin.Context) {
 		})
 		return
 	}
-	s := senders.GetKafkaSender()
+	s := senders.GetKafkaSender(controller.Config)
 	s.Send(text, topic)
 	c.JSON(202, gin.H{
 		"message": topic + ": " + text,
