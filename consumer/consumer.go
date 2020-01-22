@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 
+	"../config"
 	"github.com/Shopify/sarama"
 )
 
@@ -14,15 +15,17 @@ import (
 Consumer interface: Consumerで受け取ったメッセージを処理する部分のみ異なるのでExec()内で処理する
 */
 type Consumer interface {
-	exec(consumedMessage ConsumedMessage)
-	Run(kafkaServers []string)
+	Run(exec func(consumedMessage ConsumedMessage))
 }
 
 type consumer struct {
+	Config config.Config
 }
 
-func GetConsumer() Consumer {
-	return &consumer{}
+func GetConsumer(c config.Config) Consumer {
+	return &consumer{
+		Config: c,
+	}
 }
 
 // ConsumedMessage 受信メッセージ
@@ -31,8 +34,8 @@ type ConsumedMessage struct {
 	Timestamp int64  `json:"timestamp"`
 }
 
-func (c *consumer) Run(kafkaServers []string) {
-	if kafkaServers[0] == "" {
+func (c *consumer) Run(exec func(consumedMessage ConsumedMessage)) {
+	if c.Config.KafkaServers[0] == "" {
 		os.Exit(1)
 	}
 
@@ -42,7 +45,7 @@ func (c *consumer) Run(kafkaServers []string) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
 
-	brokers := kafkaServers
+	brokers := c.Config.KafkaServers
 	config := sarama.NewConfig()
 
 	config.Consumer.Return.Errors = true
@@ -73,7 +76,7 @@ func (c *consumer) Run(kafkaServers []string) {
 				if err := json.Unmarshal(msg.Value, &consumed); err != nil {
 					fmt.Println(err)
 				}
-				c.exec(consumed)
+				exec(consumed)
 			case <-ctx.Done():
 				break CONSUMER_FOR
 			}
@@ -85,8 +88,4 @@ func (c *consumer) Run(kafkaServers []string) {
 	<-signals
 
 	fmt.Println("go-kafka-example stop.")
-}
-
-func (c *consumer) exec(consumedMessage ConsumedMessage) {
-	fmt.Println(fmt.Sprintf("consumed message. message: %s, timestamp: %d", consumedMessage.Message, consumedMessage.Timestamp))
 }

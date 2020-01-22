@@ -22,7 +22,6 @@ func usage() {
 func main() {
 	conf := config.GetConfig()
 	flag.Parse()
-	kafkaServers := conf.KafkaServers
 	args := flag.Args()
 	if len(args) == 0 {
 		usage()
@@ -31,8 +30,11 @@ func main() {
 	if args[0] == "pserver" {
 		infrastructure.Router.Run()
 	} else if args[0] == "cprinter" {
-		c := consumer.GetConsumer()
-		c.Run(kafkaServers)
+		c := consumer.GetConsumerPrinter(*conf)
+		c.Run()
+	} else if args[0] == "cpreserver" {
+		c := consumer.GetConsumerPreserver(*conf)
+		c.Run()
 	} else {
 		usage()
 	}

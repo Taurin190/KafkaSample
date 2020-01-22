@@ -6,21 +6,21 @@ import (
 	"../config"
 )
 
-type consumePreserver struct {
+type consumePrinter struct {
 	Config config.Config
 }
 
-func GetConsumerPreserver(c config.Config) *consumePreserver {
-	return &consumePreserver{
+func GetConsumerPrinter(c config.Config) *consumePrinter {
+	return &consumePrinter{
 		Config: c,
 	}
 }
 
-func (c *consumePreserver) exec(consumedMessage ConsumedMessage) {
+func (c *consumePrinter) exec(consumedMessage ConsumedMessage) {
 	fmt.Println(fmt.Sprintf("consumed message. message: %s, timestamp: %d", consumedMessage.Message, consumedMessage.Timestamp))
 }
 
-func (c *consumePreserver) Run() {
+func (c *consumePrinter) Run() {
 	consumer := GetConsumer(c.Config)
 	consumer.Run(c.exec)
 }
