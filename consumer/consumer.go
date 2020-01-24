@@ -15,7 +15,7 @@ import (
 Consumer interface: Consumerで受け取ったメッセージを処理する部分のみ異なるのでExec()内で処理する
 */
 type Consumer interface {
-	Run(exec func(consumedMessage ConsumedMessage))
+	Run(exec func(consumedMessage ConsumedMessage), consumedTopic string)
 }
 
 type consumer struct {
@@ -34,7 +34,7 @@ type ConsumedMessage struct {
 	Timestamp int64  `json:"timestamp"`
 }
 
-func (c *consumer) Run(exec func(consumedMessage ConsumedMessage)) {
+func (c *consumer) Run(exec func(consumedMessage ConsumedMessage), consumedTopic string) {
 	if c.Config.KafkaServers[0] == "" {
 		os.Exit(1)
 	}
@@ -61,7 +61,7 @@ func (c *consumer) Run(exec func(consumedMessage ConsumedMessage)) {
 		}
 	}()
 
-	partition, err := consumer.ConsumePartition("test.A", 0, sarama.OffsetNewest)
+	partition, err := consumer.ConsumePartition(consumedTopic, 0, sarama.OffsetNewest)
 	if err != nil {
 		panic(err)
 	}
