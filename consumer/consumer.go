@@ -15,7 +15,7 @@ import (
 Consumer interface: Consumerで受け取ったメッセージを処理する部分のみ異なるのでExec()内で処理する
 */
 type Consumer interface {
-	Run(exec func(consumedMessage ConsumedMessage), consumedTopic string)
+	Run(exec func(consumedMessage ConsumedMessage), processName, consumedTopic string)
 }
 
 type consumer struct {
@@ -34,7 +34,7 @@ type ConsumedMessage struct {
 	Timestamp int64  `json:"timestamp"`
 }
 
-func (c *consumer) Run(exec func(consumedMessage ConsumedMessage), consumedTopic string) {
+func (c *consumer) Run(exec func(consumedMessage ConsumedMessage), processName, consumedTopic string) {
 	if c.Config.KafkaServers[0] == "" {
 		os.Exit(1)
 	}
@@ -83,9 +83,9 @@ func (c *consumer) Run(exec func(consumedMessage ConsumedMessage), consumedTopic
 		}
 	}()
 
-	fmt.Println("go-kafka-example start.")
+	fmt.Println(processName + " start.")
 
 	<-signals
 
-	fmt.Println("go-kafka-example stop.")
+	fmt.Println(processName + " stop.")
 }

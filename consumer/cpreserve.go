@@ -56,5 +56,5 @@ func (c *consumePreserver) exec(consumedMessage ConsumedMessage) {
 
 func (c *consumePreserver) Run() {
 	consumer := GetConsumer(c.Config)
-	consumer.Run(c.exec, "test.A")
+	consumer.Run(c.exec, "Consumer Preserver", "test.A")
 }

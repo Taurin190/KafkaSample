@@ -4,7 +4,6 @@ kafka-dockerで立ち上げのでclientのPub/Subのサンプル。
 以下を実装する。
 - RestAPIでPostした内容でTopicを作成する
 - TopicをSubscribeしてDBに保存する
-- SubscribeしたテキストをstreamingAPIで流す
 
 ## RestAPI
 `go run producer/server.go`でAPIが立ち上がるようにした。

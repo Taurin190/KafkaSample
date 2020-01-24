@@ -22,5 +22,5 @@ func (c *consumePrinter) exec(consumedMessage ConsumedMessage) {
 
 func (c *consumePrinter) Run() {
 	consumer := GetConsumer(c.Config)
-	consumer.Run(c.exec, "test.A")
+	consumer.Run(c.exec, "Consumer Printer", "test.A")
 }
