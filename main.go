@@ -16,6 +16,7 @@ func usage() {
 	fmt.Println("followings are commands:")
 	fmt.Println("\tpserver: create producer server")
 	fmt.Println("\tcprinter: create consumer print process")
+	fmt.Println("\tcpreserver: create consumer preserving process (please run mongodb on local:27017)")
 	os.Exit(1)
 }
 
